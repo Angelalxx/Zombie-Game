@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Defeat the Zombie</title>
+
+<style>
+#zombie_map {
+	height: 100%;
+        width: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        background-color: grey;
+}
+</style>
+
+
+</head>
+
+<body>
+
+My Zombie game
+
+<div id="zombie_map"></div>
+<script> 
+        var zombie_map;
+        var tolerance = 10;
+	var count = 0;
+	var score = 0;
+
+        var data = `-33.32755900503833 115.632436251219 
+hospital.png
+-33.32761279145698 115.63348231273481 hospital.png
+-33.32789516961024 115.63177106338331 zombie.png 
+-33.32714215916796 115.63308534580061 zombie.png 
+-33.32777863270551 115.63303170162031 zombie.png 
+-33.32798481327703 115.63230750518629 zombie.png 
+-33.32714215916796 115.6334984059889 zombie.png 
+-33.32730800131224 115.63200709777662 zombie.png
+-33.327890687424464 115.63209829288313 weapons.png 
+-33.327361787885856 115.6331014390547 weapons.png 
+-33.32793550927171 115.63327846484968 weapons.png 
+-33.327415574426254 115.6317335124571 weapons.png ` ;
+
+var markers = data.split("\n");
+var all_markers=[];
+
+
+
+
+           function initMap() {
+
+           zombie_map = new 
+google.maps.Map(document.getElementById('zombie_map'), {
+            zoom: 18,
+            center: {lat: -33.327617, lng: 115.633066}
+
+            });
+
+            if (navigator.geolocation) {
+navigator.geolocation.watchPosition(set_my_position);
+} 
+else {
+       alert("Geolocation doesn't work in your browser");
+}
+
+old_position = new google.maps.Marker({
+position: {lat: -33.327617, lng: 115.633066},
+map: zombie_map
+
+});
+
+function set_my_position(position) {
+
+old_position.setMap(null);
+
+var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+console.log(pos);
+
+var marker = new google.maps.Marker({
+     position: pos,
+     map: zombie_map,
+     icon: "player.png"
+});
+old_position = marker;
+
+for (var i=0; i<all_markers.length; i++)  {
+var distance = google.maps.geometry.spherical.computeDistanceBetween(pos, all_markers[i].getPosition());
+console.log(distance);
+if (distance <tolerance ){
+var what_is_it = all_markers[i].getIcon();
+what_is_it = what_is_it.replace(".png", "");
+alert("found the "+ what_is_it);
+all_markers[i].setMap(null);
+
+
+
+
+if (what_is_it= "weapon") {
+score +=30;
+alert ("Your score is "+score);
+all_markers[i].setMap(null);
+console.log(count);
+}
+else {
+score -=10;
+alert ("Your score is "+score);
+console.log(count);
+}
+
+}
+}
+
+}
+   
+
+            if (count<1) {
+            for (var i=0; i< markers.length; i++) {
+            var marker_data = markers[i].trim().split(" ");
+            var latitude = marker_data[0];
+            var longitude = marker_data[1];
+            var emoji = marker_data[2];
+
+            var marker_position = new google.maps.LatLng(latitude, longitude);
+            var marker = new google.maps.Marker({
+            position: marker_position,
+            icon: emoji,
+            map:zombie_map
+            });
+
+            all_markers.push(marker);
+
+
+}
+count++;
+
+}
+}
+</script>
+
+
+
+
+<script async defer
+   src ="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaWwb4BbgxC7vd-yERlaCx0U6pCy8eYYw&callback=initMap&libraries=geometry">
+ </script>
+
+
+
+</body>
+
+</html>
